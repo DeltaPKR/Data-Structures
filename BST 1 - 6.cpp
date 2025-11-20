@@ -156,7 +156,96 @@ TreeNode* sortedArrayToBST(const std::vector<int> &arr)
     return buildBST(arr, 0, (int)arr.size() - 1);
 }
 
+TreeNode* deleteNode(TreeNode* root, int val)
+{
+    if(!root) return nullptr;
+    
+    if(val < root->data)
+    {
+        root->left = deleteNode(root->left, val);
+    }
+    else if(val > root->data)
+    {
+        root->right = deleteNode(root->right, val);
+    }
+    else
+    {
+        if(root->left == nullptr && root->right == nullptr)
+        {
+            delete root;
+            
+            return nullptr;
+        }
+        else if (root->left == nullptr)
+        {
+            TreeNode* tmp = root->right;
+            delete root;
+            
+            return tmp;
+        }
+        else if (root->right == nullptr)
+        {
+            TreeNode* tmp = root->left;
+            delete root;
+            
+            return tmp;
+        }
+        else
+        {
+            TreeNode* tmp = root->right;
+            
+            while (tmp->left)
+            {
+                tmp = tmp->left;
+            }
+            
+            root->data = tmp->data;
+            root->right = deleteNode(root->right, tmp->data);
+        }
+    }
+    return root;
+}
+
+int countInRange(TreeNode* root, int high, int low)
+{
+    if(!root) return 0;
+    
+    if(root->data < low)
+    {
+        return countInRange(root->right, high, low);
+    }
+    else if(root->data > high)
+    {
+        return countInRange(root->left, high, low);
+    }
+    else
+    {
+        return countInRange(root->left, high, low) + countInRange(root->right, high, low) + 1;
+    }
+}
+
+bool hasPathSum(TreeNode* root, int sum) 
+{
+    if (!root) return false;
+
+    if (!root->left && !root->right) 
+    {
+        return root->val == sum;
+    }
+    return hasPathSum(root->left, sum - root->val) || hasPathSum(root->right, sum - root->val);
+}
+
 int main()
-{   
+{
+    TreeNode* root = new TreeNode(10);
+    root->left = new TreeNode(5);
+    root->right = new TreeNode(15);
+    root->left->left = new TreeNode(3);
+    root->left->right = new TreeNode(7);
+    root->right->right = new TreeNode(18);
+
+    int count = countInRange(root, 15, 7);
+
+    std::cout << count << std::endl;
     return 0;
 }
